@@ -4,10 +4,12 @@ use std::num::NonZeroUsize;
 pub struct TokenType(NonZeroUsize);
 
 impl TokenType {
+    #[must_use]
     pub fn new(value: NonZeroUsize) -> TokenType {
         Self(value)
     }
 
+    #[must_use]
     pub fn get(&self) -> NonZeroUsize {
         self.0
     }

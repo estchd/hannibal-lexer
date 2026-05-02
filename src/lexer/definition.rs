@@ -5,32 +5,35 @@ use crate::token_type::TokenType;
 
 #[derive(Debug, Clone)]
 pub struct LexerDefinition {
-    classification_table: ClassificationTable,
-    transition_table: Vec<Vec<(ClassificationClass, LexerState)>>,
-    token_type_table: Vec<Option<TokenType>>,
+    classification: ClassificationTable,
+    transition: Vec<Vec<(ClassificationClass, LexerState)>>,
+    token_type: Vec<Option<TokenType>>,
 }
 
 impl LexerDefinition {
+    #[must_use]
     pub fn new(state_count: usize) -> Self {
-        let mut transition_table = Vec::with_capacity(state_count);
+        let mut transition = Vec::with_capacity(state_count);
 
         for _ in 0..state_count {
-            transition_table.push(vec![]);
+            transition.push(vec![]);
         }
 
         Self {
-            classification_table: ClassificationTable::new(),
-            transition_table,
-            token_type_table: vec![None; state_count],
+            classification: ClassificationTable::new(),
+            transition,
+            token_type: vec![None; state_count],
         }
     }
 
+    #[must_use]
     pub fn classify(&self, value: char) -> ClassificationClass {
-        self.classification_table.classify(value)
+        self.classification.classify(value)
     }
 
+    #[must_use]
     pub fn transition(&self, state: LexerState, class: ClassificationClass) -> Option<LexerState> {
-        let transitions = &self.transition_table[state.get()];
+        let transitions = &self.transition[state.get()];
 
         for (transition_class, new_state) in transitions {
             if *transition_class == class {
@@ -42,29 +45,32 @@ impl LexerDefinition {
             }
         }
 
-        return None;
+        None
     }
 
+    #[must_use]
     pub fn transition_by_char(&self, state: LexerState, value: char) -> Option<LexerState> {
-        let class = self.classification_table.classify(value);
+        let class = self.classification.classify(value);
 
         self.transition(state, class)
     }
 
+    #[must_use]
     pub fn is_final_state(&self, state: LexerState) -> bool {
-        self.token_type_table[state.get()].is_some()
+        self.token_type[state.get()].is_some()
     }
 
+    #[must_use]
     pub fn state_to_token_type(&self, state: LexerState) -> Option<TokenType> {
-        self.token_type_table[state.get()]
+        self.token_type[state.get()]
     }
 
     pub fn add_classification(&mut self, value: char, class: ClassificationClass) {
-        self.classification_table.add_classification(value, class);
+        self.classification.add_classification(value, class);
     }
 
     pub fn add_transition(&mut self, origin_state: LexerState, class: ClassificationClass, new_state: LexerState) {
-        let transitions = &mut self.transition_table[origin_state.get()];
+        let transitions = &mut self.transition[origin_state.get()];
 
         let mut index = 0;
 
@@ -85,6 +91,6 @@ impl LexerDefinition {
     }
 
     pub fn add_token_type(&mut self, state: LexerState, token_type: TokenType) {
-        self.token_type_table[state.get()] = Some(token_type);
+        self.token_type[state.get()] = Some(token_type);
     }
 }

@@ -40,22 +40,26 @@ impl<R: Read> Lexer<R> {
         }
     }
 
-    pub fn next(&mut self) -> Result<LexerToken, LexerError> {
+    /// # Errors
+    ///
+    /// Will return 'Err' if:
+    /// - There is an error reading the next input character, see [`LexerInput::next_char`](crate::lexer::input::LexerInput::next_char) for more details.
+    /// - There is no more input before the DFA encounters a valid final state, meaning the read input does not contain any valid lexemes.
+    /// - The Lexer reads a character that does not have a valid transition from the current state and no valid final state has been encountered yet, meaning the read input does not contain any valid lexemes.
+    pub fn next_lexeme(&mut self) -> Result<LexerToken, LexerError> {
         let mut last_final_state: Option<(TokenType, usize)> = None;
 
         loop {
-           let next_char = self.input.next()?;
+           let next_char = self.input.next_char()?;
 
-           let next_char = match next_char {
-               None => break,
-               Some(char) => char
+           let Some(next_char) = next_char else {
+               break;
            };
 
             let new_state = self.definition.transition_by_char(self.state, next_char);
 
-            let new_state = match new_state {
-                None => break,
-                Some(state) => state
+            let Some(new_state) = new_state else {
+                break;
             };
 
             self.state = new_state;
@@ -77,6 +81,14 @@ impl<R: Read> Lexer<R> {
             token_value
         };
 
-        return Ok(token);
+        Ok(token)
+    }
+}
+
+impl<R: Read> Iterator for Lexer<R> {
+    type Item = Result<LexerToken, LexerError>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        Some(self.next_lexeme())
     }
 }

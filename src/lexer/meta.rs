@@ -14,14 +14,15 @@ pub struct LexerMeta {
 }
 
 impl LexerMeta {
+    #[must_use]
     pub fn new() -> Self {
         Self {
-            name_to_state: Default::default(),
-            state_to_name: Default::default(),
-            name_to_class: Default::default(),
-            class_to_name: Default::default(),
-            name_to_type: Default::default(),
-            type_to_name: Default::default(),
+            name_to_state: HashMap::default(),
+            state_to_name: HashMap::default(),
+            name_to_class: HashMap::default(),
+            class_to_name: HashMap::default(),
+            name_to_type: HashMap::default(),
+            type_to_name: HashMap::default(),
         }
     }
 
@@ -40,34 +41,45 @@ impl LexerMeta {
         self.name_to_type.insert(name, token_type);
     }
 
+    #[must_use]
     pub fn get_state_from_name(&self, name: &str) -> Option<LexerState> {
         self.name_to_state.get(name)
-            .cloned()
+            .copied()
     }
 
+    #[must_use]
     pub fn get_class_from_name(&self, name: &str) -> Option<ClassificationClass> {
         self.name_to_class.get(name)
-            .cloned()
+            .copied()
     }
 
+    #[must_use]
     pub fn get_type_from_name(&self, name: &str) -> Option<TokenType> {
         self.name_to_type.get(name)
-            .cloned()
+            .copied()
     }
 
+    #[must_use]
     pub fn get_name_from_state(&self, state: LexerState) -> Option<String> {
         self.state_to_name.get(&state)
             .cloned()
     }
 
+    #[must_use]
     pub fn get_name_from_class(&self, class: ClassificationClass) -> Option<String> {
         self.class_to_name.get(&class)
             .cloned()
     }
 
+    #[must_use]
     pub fn get_name_from_type(&self, token_type: TokenType) -> Option<String> {
         self.type_to_name.get(&token_type)
             .cloned()
     }
+}
 
+impl Default for LexerMeta {
+    fn default() -> Self {
+        Self::new()
+    }
 }

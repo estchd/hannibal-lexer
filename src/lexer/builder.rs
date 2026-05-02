@@ -18,11 +18,15 @@ pub struct LexerBuilder {
 }
 
 impl LexerBuilder {
+    #[must_use]
     pub fn new() -> Self {
         let mut meta = LexerMeta::new();
 
         meta.add_state("start".to_string(), LexerState::start_state());
         meta.add_class("default".to_string(), ClassificationClass::default_class());
+
+        #[allow(clippy::missing_panics_doc, reason = "NonZeroUsize::new(1) should never panic since the value is a constant and non-zero")]
+        let next_type_index = NonZeroUsize::new(1).expect("NonZeroUsize::new(1) should never panic since the value is a constant and non-zero");
 
         Self {
             meta: LexerMeta::new(),
@@ -31,7 +35,7 @@ impl LexerBuilder {
             token_types: HashMap::new(),
             next_class: ClassificationClass::new(1),
             next_state: LexerState::new(1),
-            next_type: TokenType::new(NonZeroUsize::new(1).unwrap()),
+            next_type: TokenType::new(next_type_index),
         }
     }
 
@@ -46,11 +50,8 @@ impl LexerBuilder {
         let class = self.get_or_create_class(class_name);
         let new_state = self.get_or_create_state(new_state_name);
 
-        if !self.transitions.contains_key(&origin_state) {
-            self.transitions.insert(origin_state, HashMap::new());
-        }
-
-        let transitions = self.transitions.get_mut(&origin_state).unwrap();
+        let transitions = self.transitions.entry(origin_state)
+            .or_default();
 
         transitions.insert(class, new_state);
     }
@@ -62,6 +63,7 @@ impl LexerBuilder {
         self.token_types.insert(state, token_type);
     }
 
+    #[must_use]
     pub fn build(self) -> (LexerDefinition, LexerMeta) {
         let state_count = self.next_state.get();
 
@@ -144,5 +146,11 @@ impl LexerBuilder {
         let non_zero = self.next_type.get().checked_add(1).expect("Too many types");
 
         self.next_type = TokenType::new(non_zero);
+    }
+}
+
+impl Default for LexerBuilder {
+    fn default() -> Self {
+        Self::new()
     }
 }

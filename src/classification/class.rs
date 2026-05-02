@@ -3,18 +3,22 @@
 pub struct ClassificationClass(usize);
 
 impl ClassificationClass {
+    #[must_use]
     pub fn new(value: usize) -> Self {
         Self(value)
     }
 
+    #[must_use]
     pub fn default_class() -> Self {
         Self(0)
     }
 
+    #[must_use]
     pub fn is_default_class(&self) -> bool {
         self.0 == 0
     }
 
+    #[must_use]
     pub fn get(&self) -> usize {
         self.0
     }

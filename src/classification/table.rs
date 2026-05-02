@@ -8,20 +8,22 @@ pub struct ClassificationTable {
 }
 
 impl ClassificationTable {
+    #[must_use]
     pub fn new() -> Self {
         Self {
             ascii_table: [ClassificationClass::default_class(); 128],
-            extended_table: Default::default(),
+            extended_table: HashMap::default(),
         }
     }
 
+    #[must_use]
     pub fn classify(&self, value: char) -> ClassificationClass {
         if value.is_ascii() {
             return self.ascii_table[value as usize]
         }
 
         self.extended_table.get(&value)
-            .cloned()
+            .copied()
             .unwrap_or(ClassificationClass::default_class())
     }
 
@@ -31,5 +33,11 @@ impl ClassificationTable {
         }
 
         self.extended_table.insert(value, class);
+    }
+}
+
+impl Default for ClassificationTable {
+    fn default() -> Self {
+        Self::new()
     }
 }
