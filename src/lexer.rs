@@ -1,25 +1,25 @@
-use std::io::Read;
-use thiserror::Error;
-use crate::lexer::definition::LexerDefinition;
+pub mod builder;
+pub mod definition;
+pub mod input;
+pub mod meta;
+pub mod state;
+pub mod token;
+
 use crate::lexer::LexerError::Invalid;
+use crate::lexer::definition::LexerDefinition;
 use crate::lexer::input::{LexerInput, LexerInputError};
 use crate::lexer::state::LexerState;
 use crate::lexer::token::LexerToken;
 use crate::token_type::TokenType;
-
-pub mod builder;
-pub mod definition;
-pub mod state;
-pub mod meta;
-pub mod token;
-pub mod input;
+use std::io::Read;
+use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum LexerError {
     #[error("Error reading next input character: {0}")]
     Input(#[from] LexerInputError),
     #[error("The read input does not contain any valid lexemes, read characters: {0:?}")]
-    Invalid(Vec<char>)
+    Invalid(Vec<char>),
 }
 
 pub struct Lexer<R: Read> {
@@ -31,7 +31,7 @@ pub struct Lexer<R: Read> {
 impl<R: Read> Lexer<R> {
     pub fn new(
         definition: LexerDefinition,
-        input: R
+        input: R,
     ) -> Self {
         Self {
             definition,
@@ -50,13 +50,17 @@ impl<R: Read> Lexer<R> {
         let mut last_final_state: Option<(TokenType, usize)> = None;
 
         loop {
-           let next_char = self.input.next_char()?;
+            let next_char = self
+                .input
+                .next_char()?;
 
-           let Some(next_char) = next_char else {
-               break;
-           };
+            let Some(next_char) = next_char else {
+                break;
+            };
 
-            let new_state = self.definition.transition_by_char(self.state, next_char);
+            let new_state = self
+                .definition
+                .transition_by_char(self.state, next_char);
 
             let Some(new_state) = new_state else {
                 break;
@@ -64,21 +68,35 @@ impl<R: Read> Lexer<R> {
 
             self.state = new_state;
 
-            if let Some(new_token_type) = self.definition.state_to_token_type(new_state) {
-                last_final_state = Some((new_token_type, self.input.get_current_lexeme_length()));
+            if let Some(new_token_type) = self
+                .definition
+                .state_to_token_type(new_state)
+            {
+                last_final_state = Some((
+                    new_token_type,
+                    self.input
+                        .get_current_lexeme_length(),
+                ));
             }
         }
 
         let (token_type, lexeme_length) = match last_final_state {
-            None => return Err(Invalid(self.input.get_buffer())),
-            Some((token_type, lexeme_length)) => (token_type, lexeme_length)
+            None => {
+                return Err(Invalid(
+                    self.input
+                        .get_buffer(),
+                ));
+            },
+            Some((token_type, lexeme_length)) => (token_type, lexeme_length),
         };
 
-        let token_value = self.input.remove_lexeme(lexeme_length);
+        let token_value = self
+            .input
+            .remove_lexeme(lexeme_length);
 
         let token = LexerToken {
             token_type,
-            token_value
+            token_value,
         };
 
         Ok(token)

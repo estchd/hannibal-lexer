@@ -4,13 +4,13 @@ pub struct ClassificationClass(usize);
 
 impl ClassificationClass {
     #[must_use]
-    pub fn new(value: usize) -> Self {
-        Self(value)
+    pub fn default_class() -> Self {
+        Self(0)
     }
 
     #[must_use]
-    pub fn default_class() -> Self {
-        Self(0)
+    pub fn get(&self) -> usize {
+        self.0
     }
 
     #[must_use]
@@ -19,8 +19,8 @@ impl ClassificationClass {
     }
 
     #[must_use]
-    pub fn get(&self) -> usize {
-        self.0
+    pub fn new(value: usize) -> Self {
+        Self(value)
     }
 }
 

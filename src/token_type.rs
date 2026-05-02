@@ -5,12 +5,12 @@ pub struct TokenType(NonZeroUsize);
 
 impl TokenType {
     #[must_use]
-    pub fn new(value: NonZeroUsize) -> TokenType {
-        Self(value)
+    pub fn get(&self) -> NonZeroUsize {
+        self.0
     }
 
     #[must_use]
-    pub fn get(&self) -> NonZeroUsize {
-        self.0
+    pub fn new(value: NonZeroUsize) -> TokenType {
+        Self(value)
     }
 }
