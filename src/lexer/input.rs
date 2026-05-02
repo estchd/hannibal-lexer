@@ -17,16 +17,14 @@ pub struct LexerInput<R: Read> {
 
 impl<R: Read> LexerInput<R> {
     pub fn get_buffer(&self) -> Vec<char> {
-        self.buffer
-            .clone()
+        self.buffer.clone()
     }
 
     pub fn get_current_lexeme_length(&self) -> usize {
         if let Some(current_index) = self.current_index {
             current_index
         } else {
-            self.buffer
-                .len()
+            self.buffer.len()
         }
     }
 
@@ -34,8 +32,7 @@ impl<R: Read> LexerInput<R> {
         if let Some(current_index) = self.current_index {
             self.buffer[current_index..].to_vec()
         } else {
-            self.buffer
-                .clone()
+            self.buffer.clone()
         }
     }
 
@@ -55,13 +52,13 @@ impl<R: Read> LexerInput<R> {
         if let Some(current_index) = self.current_index {
             let next_char = self.buffer[current_index];
 
+            #[expect(
+                clippy::arithmetic_side_effects,
+                reason = "next_index starts at 0 and is only incremented by 1. Incrementing stops when next_index equals buffer.len() and buffer.len() is at most usize::MAX, so next_index should never overflow"
+            )]
             let next_index = current_index + 1;
 
-            self.current_index = if next_index
-                == self
-                    .buffer
-                    .len()
-            {
+            self.current_index = if next_index >= self.buffer.len() {
                 None
             } else {
                 Some(next_index)
@@ -70,9 +67,7 @@ impl<R: Read> LexerInput<R> {
             return Ok(Some(next_char));
         }
 
-        let next_char = self
-            .input
-            .next_char()?;
+        let next_char = self.input.next_char()?;
 
         let next_char = match next_char {
             Char::Eof => return Ok(None),
@@ -80,8 +75,7 @@ impl<R: Read> LexerInput<R> {
             Char::Char(value) => value,
         };
 
-        self.buffer
-            .push(next_char);
+        self.buffer.push(next_char);
 
         Ok(Some(next_char))
     }
@@ -90,11 +84,7 @@ impl<R: Read> LexerInput<R> {
         &mut self,
         lexeme_length: usize,
     ) -> Vec<char> {
-        let actual_length = min(
-            lexeme_length,
-            self.buffer
-                .len(),
-        );
+        let actual_length = min(lexeme_length, self.buffer.len());
 
         let lexeme = self
             .buffer

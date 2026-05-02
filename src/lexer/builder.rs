@@ -61,9 +61,7 @@ impl LexerBuilder {
 
     #[must_use]
     pub fn build(self) -> (LexerDefinition, LexerMeta) {
-        let state_count = self
-            .next_state
-            .get();
+        let state_count = self.next_state.get();
 
         let mut definition = LexerDefinition::new(state_count);
 
@@ -147,20 +145,28 @@ impl LexerBuilder {
         }
     }
 
+    /// # Panics
+    ///
+    /// - Will panic if the number of classes exceeds `usize::MAX`
     fn increment_class(&mut self) {
-        self.next_class = ClassificationClass::new(
-            self.next_class
-                .get()
-                + 1,
-        );
+        let class_index = self.next_class.get();
+        let next_class_index = class_index
+            .checked_add(1)
+            .expect("Too many classes");
+
+        self.next_class = ClassificationClass::new(next_class_index);
     }
 
+    /// # Panics
+    ///
+    /// - Will panic if the number of classes exceeds `usize::MAX`
     fn increment_state(&mut self) {
-        self.next_state = LexerState::new(
-            self.next_state
-                .get()
-                + 1,
-        );
+        let state_index = self.next_state.get();
+        let next_state_index = state_index
+            .checked_add(1)
+            .expect("Too many states");
+
+        self.next_state = LexerState::new(next_state_index);
     }
 
     fn increment_type(&mut self) {

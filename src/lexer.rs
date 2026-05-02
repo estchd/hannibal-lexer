@@ -50,9 +50,7 @@ impl<R: Read> Lexer<R> {
         let mut last_final_state: Option<(TokenType, usize)> = None;
 
         loop {
-            let next_char = self
-                .input
-                .next_char()?;
+            let next_char = self.input.next_char()?;
 
             let Some(next_char) = next_char else {
                 break;
@@ -82,10 +80,7 @@ impl<R: Read> Lexer<R> {
 
         let (token_type, lexeme_length) = match last_final_state {
             None => {
-                return Err(Invalid(
-                    self.input
-                        .get_buffer(),
-                ));
+                return Err(Invalid(self.input.get_buffer()));
             },
             Some((token_type, lexeme_length)) => (token_type, lexeme_length),
         };

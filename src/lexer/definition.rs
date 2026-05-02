@@ -38,7 +38,10 @@ impl LexerDefinition {
 
         let mut index = 0;
 
-        for (transition_class, transition_state) in &mut *transitions {
+        for (new_index, (transition_class, transition_state)) in transitions
+            .iter_mut()
+            .enumerate()
+        {
             if *transition_class == class {
                 *transition_state = new_state;
                 return;
@@ -48,7 +51,7 @@ impl LexerDefinition {
                 break;
             }
 
-            index += 1;
+            index = new_index;
         }
 
         transitions.insert(index, (class, new_state));
