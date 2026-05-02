@@ -14,6 +14,7 @@ pub struct LexerMeta {
 }
 
 impl LexerMeta {
+    #[inline]
     pub fn add_class(
         &mut self,
         name: String,
@@ -25,6 +26,7 @@ impl LexerMeta {
             .insert(name, class);
     }
 
+    #[inline]
     pub fn add_state(
         &mut self,
         name: String,
@@ -36,6 +38,7 @@ impl LexerMeta {
             .insert(name, state);
     }
 
+    #[inline]
     pub fn add_type(
         &mut self,
         name: String,
@@ -47,6 +50,7 @@ impl LexerMeta {
             .insert(name, token_type);
     }
 
+    #[inline]
     #[must_use]
     pub fn get_class_from_name(
         &self,
@@ -57,6 +61,7 @@ impl LexerMeta {
             .copied()
     }
 
+    #[inline]
     #[must_use]
     pub fn get_name_from_class(
         &self,
@@ -67,6 +72,7 @@ impl LexerMeta {
             .cloned()
     }
 
+    #[inline]
     #[must_use]
     pub fn get_name_from_state(
         &self,
@@ -77,6 +83,7 @@ impl LexerMeta {
             .cloned()
     }
 
+    #[inline]
     #[must_use]
     pub fn get_name_from_type(
         &self,
@@ -87,6 +94,7 @@ impl LexerMeta {
             .cloned()
     }
 
+    #[inline]
     #[must_use]
     pub fn get_state_from_name(
         &self,
@@ -97,6 +105,7 @@ impl LexerMeta {
             .copied()
     }
 
+    #[inline]
     #[must_use]
     pub fn get_type_from_name(
         &self,
@@ -107,6 +116,7 @@ impl LexerMeta {
             .copied()
     }
 
+    #[inline]
     #[must_use]
     pub fn new() -> Self {
         Self {
@@ -121,6 +131,7 @@ impl LexerMeta {
 }
 
 impl Default for LexerMeta {
+    #[inline]
     fn default() -> Self {
         Self::new()
     }

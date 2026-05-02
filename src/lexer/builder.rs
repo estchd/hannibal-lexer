@@ -18,6 +18,7 @@ pub struct LexerBuilder {
 }
 
 impl LexerBuilder {
+    #[inline]
     pub fn add_classification(
         &mut self,
         value: char,
@@ -29,6 +30,7 @@ impl LexerBuilder {
             .insert(value, class);
     }
 
+    #[inline]
     pub fn add_token_type(
         &mut self,
         state_name: &str,
@@ -41,6 +43,7 @@ impl LexerBuilder {
             .insert(state, token_type);
     }
 
+    #[inline]
     pub fn add_transition(
         &mut self,
         origin_state_name: &str,
@@ -59,6 +62,7 @@ impl LexerBuilder {
         transitions.insert(class, new_state);
     }
 
+    #[inline]
     #[must_use]
     pub fn build(self) -> (LexerDefinition, LexerMeta) {
         let state_count = self.next_state.get();
@@ -150,6 +154,11 @@ impl LexerBuilder {
     /// - Will panic if the number of classes exceeds `usize::MAX`
     fn increment_class(&mut self) {
         let class_index = self.next_class.get();
+
+        #[expect(
+            clippy::expect_used,
+            reason = "This expect only panics if the number of types exceeds usize::MAX, if that ever happens, a panic is fine for now"
+        )]
         let next_class_index = class_index
             .checked_add(1)
             .expect("Too many classes");
@@ -162,6 +171,11 @@ impl LexerBuilder {
     /// - Will panic if the number of classes exceeds `usize::MAX`
     fn increment_state(&mut self) {
         let state_index = self.next_state.get();
+
+        #[expect(
+            clippy::expect_used,
+            reason = "This expect only panics if the number of types exceeds usize::MAX, if that ever happens, a panic is fine for now"
+        )]
         let next_state_index = state_index
             .checked_add(1)
             .expect("Too many states");
@@ -170,6 +184,10 @@ impl LexerBuilder {
     }
 
     fn increment_type(&mut self) {
+        #[expect(
+            clippy::expect_used,
+            reason = "This expect only panics if the number of types exceeds usize::MAX, if that ever happens, a panic is fine for now"
+        )]
         let non_zero = self
             .next_type
             .get()
@@ -179,6 +197,7 @@ impl LexerBuilder {
         self.next_type = TokenType::new(non_zero);
     }
 
+    #[inline]
     #[must_use]
     pub fn new() -> Self {
         let mut meta = LexerMeta::new();
@@ -186,7 +205,11 @@ impl LexerBuilder {
         meta.add_state("start".to_string(), LexerState::start_state());
         meta.add_class("default".to_string(), ClassificationClass::default_class());
 
-        #[expect(clippy::missing_panics_doc, reason = "NonZeroUsize::new(1) should never panic since the value is a constant and non-zero")]
+        #[expect(
+            clippy::missing_panics_doc,
+            clippy::expect_used,
+            reason = "NonZeroUsize::new(1) should never panic since the value is a constant and non-zero"
+        )]
         let next_type_index = NonZeroUsize::new(1).expect("NonZeroUsize::new(1) should never panic since the value is a constant and non-zero");
 
         Self {
@@ -202,6 +225,7 @@ impl LexerBuilder {
 }
 
 impl Default for LexerBuilder {
+    #[inline]
     fn default() -> Self {
         Self::new()
     }

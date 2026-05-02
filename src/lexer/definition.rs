@@ -11,6 +11,7 @@ pub struct LexerDefinition {
 }
 
 impl LexerDefinition {
+    #[inline]
     pub fn add_classification(
         &mut self,
         value: char,
@@ -20,6 +21,7 @@ impl LexerDefinition {
             .add_classification(value, class);
     }
 
+    #[inline]
     pub fn add_token_type(
         &mut self,
         state: LexerState,
@@ -28,6 +30,7 @@ impl LexerDefinition {
         self.token_type[state.get()] = Some(token_type);
     }
 
+    #[inline]
     pub fn add_transition(
         &mut self,
         origin_state: LexerState,
@@ -57,6 +60,7 @@ impl LexerDefinition {
         transitions.insert(index, (class, new_state));
     }
 
+    #[inline]
     #[must_use]
     pub fn classify(
         &self,
@@ -66,6 +70,7 @@ impl LexerDefinition {
             .classify(value)
     }
 
+    #[inline]
     #[must_use]
     pub fn is_final_state(
         &self,
@@ -74,6 +79,7 @@ impl LexerDefinition {
         self.token_type[state.get()].is_some()
     }
 
+    #[inline]
     #[must_use]
     pub fn new(state_count: usize) -> Self {
         let mut transition = Vec::with_capacity(state_count);
@@ -89,6 +95,7 @@ impl LexerDefinition {
         }
     }
 
+    #[inline]
     #[must_use]
     pub fn state_to_token_type(
         &self,
@@ -97,6 +104,7 @@ impl LexerDefinition {
         self.token_type[state.get()]
     }
 
+    #[inline]
     #[must_use]
     pub fn transition(
         &self,
@@ -118,6 +126,7 @@ impl LexerDefinition {
         None
     }
 
+    #[inline]
     #[must_use]
     pub fn transition_by_char(
         &self,

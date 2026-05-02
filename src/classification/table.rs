@@ -8,6 +8,7 @@ pub struct ClassificationTable {
 }
 
 impl ClassificationTable {
+    #[inline]
     pub fn add_classification(
         &mut self,
         value: char,
@@ -21,6 +22,7 @@ impl ClassificationTable {
             .insert(value, class);
     }
 
+    #[inline]
     #[must_use]
     pub fn classify(
         &self,
@@ -36,6 +38,7 @@ impl ClassificationTable {
             .unwrap_or(ClassificationClass::default_class())
     }
 
+    #[inline]
     #[must_use]
     pub fn new() -> Self {
         Self {
@@ -46,6 +49,7 @@ impl ClassificationTable {
 }
 
 impl Default for ClassificationTable {
+    #[inline]
     fn default() -> Self {
         Self::new()
     }

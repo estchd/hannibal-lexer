@@ -16,10 +16,12 @@ pub struct LexerInput<R: Read> {
 }
 
 impl<R: Read> LexerInput<R> {
+    #[inline]
     pub fn get_buffer(&self) -> Vec<char> {
         self.buffer.clone()
     }
 
+    #[inline]
     pub fn get_current_lexeme_length(&self) -> usize {
         if let Some(current_index) = self.current_index {
             current_index
@@ -28,6 +30,7 @@ impl<R: Read> LexerInput<R> {
         }
     }
 
+    #[inline]
     pub fn get_remaining(&self) -> Vec<char> {
         if let Some(current_index) = self.current_index {
             self.buffer[current_index..].to_vec()
@@ -36,6 +39,7 @@ impl<R: Read> LexerInput<R> {
         }
     }
 
+    #[inline]
     pub fn new(input: R) -> Self {
         Self {
             buffer: Vec::with_capacity(256),
@@ -48,6 +52,7 @@ impl<R: Read> LexerInput<R> {
     ///
     /// Will return 'Err' if:
     /// - There is an error reading the next UTF-8 character from the input, see [`utf8_read::Reader::next_char`](utf8_read::Reader::next_char) for more details.
+    #[inline]
     pub fn next_char(&mut self) -> Result<Option<char>, LexerInputError> {
         if let Some(current_index) = self.current_index {
             let next_char = self.buffer[current_index];
@@ -80,6 +85,7 @@ impl<R: Read> LexerInput<R> {
         Ok(Some(next_char))
     }
 
+    #[inline]
     pub fn remove_lexeme(
         &mut self,
         lexeme_length: usize,
@@ -90,7 +96,8 @@ impl<R: Read> LexerInput<R> {
             .buffer
             .drain(0..actual_length)
             .collect::<Vec<char>>();
-        self.current_index = Some(0);
+
+        self.current_index = (!self.buffer.is_empty()).then_some(0);
 
         lexeme
     }
@@ -99,6 +106,7 @@ impl<R: Read> LexerInput<R> {
 impl<R: Read> Iterator for LexerInput<R> {
     type Item = Result<char, LexerInputError>;
 
+    #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         match self.next_char() {
             Ok(Some(next_char)) => Some(Ok(next_char)),
