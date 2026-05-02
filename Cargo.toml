@@ -2,11 +2,18 @@
 name = "hannibal"
 version = "0.1.0"
 edition = "2024"
+repository = "https://github.com/estchd/hannibal/"
+description = "DFA based Lexer written in Rust."
+license = "LICENSE"
+readme = "README.md"
+keywords = ["lexer", "dfa"]
+categories = ["parsing", "compilers"]
 
 [dependencies]
 utf8-read = "0.4.0"
 thiserror = "2.0.18"
 
 [lints.clippy]
+cargo = "warn"
 pedantic = "warn"
 default_trait_access = "warn"
