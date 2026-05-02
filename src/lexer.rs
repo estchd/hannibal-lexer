@@ -1,9 +1,8 @@
 use std::io::Read;
 use thiserror::Error;
-use utf8_read::{Char, Reader};
 use crate::lexer::definition::LexerDefinition;
 use crate::lexer::LexerError::Invalid;
-use crate::lexer::meta::LexerMeta;
+use crate::lexer::input::{LexerInput, LexerInputError};
 use crate::lexer::state::LexerState;
 use crate::lexer::token::LexerToken;
 use crate::token_type::TokenType;
@@ -12,83 +11,72 @@ pub mod builder;
 pub mod definition;
 pub mod state;
 pub mod meta;
-mod token;
+pub mod token;
+pub mod input;
 
 #[derive(Debug, Error)]
 pub enum LexerError {
-    #[error("Input is not valid UTF-8: {0}")]
-    Utf8(#[from] utf8_read::Error),
-    #[error("The read input does not contain any valid lexemes")]
+    #[error("Error reading next input character: {0}")]
+    Input(#[from] LexerInputError),
+    #[error("The read input does not contain any valid lexemes, read characters: {0:?}")]
     Invalid(Vec<char>)
 }
 
-#[derive(Debug, Clone)]
-pub struct Lexer {
+pub struct Lexer<R: Read> {
     definition: LexerDefinition,
-    meta: LexerMeta,
+    input: LexerInput<R>,
+    state: LexerState,
 }
 
-impl Lexer {
-    pub fn next<R: Read>(&mut self, input: &mut R, previous_remaining: Option<&[char]>) -> Result<(LexerToken, Vec<char>), LexerError> {
-        let mut input = Reader::new(input);
-
-        let mut current_state = LexerState::start_state();
-
-        let mut last_token_type: Option<(TokenType, usize)> = None;
-
-        let mut buffer = Vec::<char>::new();
-
-        let mut index = 0;
-
-        if let Some(remaining) = previous_remaining {
-            let mut index = 0;
-            for remaining_char in remaining {
-                let remaining_char = *remaining_char;
-
-                todo!()
-            }
+impl<R: Read> Lexer<R> {
+    pub fn new(
+        definition: LexerDefinition,
+        input: R
+    ) -> Self {
+        Self {
+            definition,
+            input: LexerInput::new(input),
+            state: LexerState::start_state(),
         }
+    }
+
+    pub fn next(&mut self) -> Result<LexerToken, LexerError> {
+        let mut last_final_state: Option<(TokenType, usize)> = None;
 
         loop {
-            let next_char = input.next_char()?;
+           let next_char = self.input.next()?;
 
-            let next_char = match next_char {
-                Char::Eof => break,
-                Char::NoData => panic!("Unexpected NoData"),
-                Char::Char(value) => value
-            };
+           let next_char = match next_char {
+               None => break,
+               Some(char) => char
+           };
 
-            buffer.push(next_char);
-            index += 1;
-
-            let new_state = self.definition.transition_by_char(current_state, next_char);
+            let new_state = self.definition.transition_by_char(self.state, next_char);
 
             let new_state = match new_state {
                 None => break,
                 Some(state) => state
             };
 
-            current_state = new_state;
+            self.state = new_state;
 
             if let Some(new_token_type) = self.definition.state_to_token_type(new_state) {
-                last_token_type = Some((new_token_type, index));
+                last_final_state = Some((new_token_type, self.input.get_current_lexeme_length()));
             }
         }
 
-        let (token_type, final_index) = match last_token_type {
-            None => return Err(Invalid(buffer)),
-            Some((final_state, final_index)) => (final_state, final_index)
+        let (token_type, lexeme_length) = match last_final_state {
+            None => return Err(Invalid(self.input.get_buffer())),
+            Some((token_type, lexeme_length)) => (token_type, lexeme_length)
         };
 
-        let token_value = buffer[0..final_index].to_vec();
-
-        let remaining = buffer[final_index..].to_vec();
+        let token_value = self.input.remove_lexeme(lexeme_length);
 
         let token = LexerToken {
             token_type,
-            token_value,
+            token_value
         };
 
-        Ok((token, remaining))
+        return Ok(token);
     }
 }
