@@ -102,7 +102,7 @@ impl LexerBuilder {
             self.increment_class();
 
             self.meta
-                .add_class(class_name.to_string(), class);
+                .add_class(class_name.to_owned(), class);
             class
         }
     }
@@ -123,7 +123,7 @@ impl LexerBuilder {
             self.increment_state();
 
             self.meta
-                .add_state(state_name.to_string(), state);
+                .add_state(state_name.to_owned(), state);
             state
         }
     }
@@ -144,7 +144,7 @@ impl LexerBuilder {
             self.increment_type();
 
             self.meta
-                .add_type(type_name.to_string(), token_type);
+                .add_type(type_name.to_owned(), token_type);
             token_type
         }
     }
@@ -202,8 +202,8 @@ impl LexerBuilder {
     pub fn new() -> Self {
         let mut meta = LexerMeta::new();
 
-        meta.add_state("start".to_string(), LexerState::start_state());
-        meta.add_class("default".to_string(), ClassificationClass::default_class());
+        meta.add_state("start".to_owned(), LexerState::start_state());
+        meta.add_class("default".to_owned(), ClassificationClass::default_class());
 
         #[expect(
             clippy::missing_panics_doc,
