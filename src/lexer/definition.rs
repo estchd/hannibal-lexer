@@ -39,25 +39,18 @@ impl LexerDefinition {
     ) {
         let transitions = &mut self.transition[origin_state.get()];
 
-        let mut index = 0;
-
-        for (new_index, (transition_class, transition_state)) in transitions
+        for (transition_class, transition_state) in transitions
             .iter_mut()
-            .enumerate()
         {
-            index = new_index;
-
             if *transition_class == class {
                 *transition_state = new_state;
                 return;
             }
-
-            if *transition_class > class {
-                break;
-            }
         }
 
-        transitions.insert(index, (class, new_state));
+        transitions.push((class, new_state));
+
+        transitions.sort_by_key(|(class, _)| *class);
     }
 
     #[inline]
