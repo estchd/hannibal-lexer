@@ -1,8 +1,8 @@
 [package]
-name = "hannibal"
+name = "hannibal-lexer"
 version = "0.1.0"
 edition = "2024"
-repository = "https://github.com/estchd/hannibal/"
+repository = "https://github.com/estchd/hannibal-lexer"
 description = "DFA based Lexer written in Rust."
 license = "LICENSE"
 readme = "README.md"

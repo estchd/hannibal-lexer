@@ -3,7 +3,7 @@
 version = 4
 
 [[package]]
-name = "hannibal"
+name = "hannibal-lexer"
 version = "0.1.0"
 dependencies = [
  "thiserror",
