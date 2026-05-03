@@ -45,6 +45,8 @@ impl LexerDefinition {
             .iter_mut()
             .enumerate()
         {
+            index = new_index;
+
             if *transition_class == class {
                 *transition_state = new_state;
                 return;
@@ -53,8 +55,6 @@ impl LexerDefinition {
             if *transition_class > class {
                 break;
             }
-
-            index = new_index;
         }
 
         transitions.insert(index, (class, new_state));

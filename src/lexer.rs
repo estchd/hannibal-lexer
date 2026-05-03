@@ -82,7 +82,11 @@ impl<R: Read> Lexer<R> {
 
         let (token_type, lexeme_length) = match last_final_state {
             None => {
-                if self.input.get_current_lexeme_length() == 0 {
+                if self
+                    .input
+                    .get_current_lexeme_length()
+                    == 0
+                {
                     return Ok(None);
                 }
 
