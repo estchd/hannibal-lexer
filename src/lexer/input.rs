@@ -41,9 +41,11 @@ impl<R: Read> LexerInput<R> {
 
     #[inline]
     pub fn new(input: R) -> Self {
+        let reader = Reader::new(input).set_eof_on_no_data(true);
+
         Self {
             buffer: Vec::with_capacity(256),
-            input: Reader::new(input),
+            input: reader,
             current_index: Option::default(),
         }
     }
