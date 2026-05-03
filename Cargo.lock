@@ -4,7 +4,7 @@ version = 4
 
 [[package]]
 name = "hannibal-lexer"
-version = "0.2.1"
+version = "0.2.2"
 dependencies = [
  "thiserror",
  "utf8-read",
