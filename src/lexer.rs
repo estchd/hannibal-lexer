@@ -100,7 +100,7 @@ impl<R: Read> Lexer<R> {
             token_value,
         };
 
-        Ok(token)
+        Ok(Some(token))
     }
 }
 
@@ -109,6 +109,10 @@ impl<R: Read> Iterator for Lexer<R> {
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
-        Some(self.next_lexeme())
+        match self.next_lexeme() {
+            Ok(Some(token)) => Some(Ok(token)),
+            Ok(None) => None,
+            Err(e) => Some(Err(e)),
+        }
     }
 }
