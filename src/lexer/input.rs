@@ -77,8 +77,7 @@ impl<R: Read> LexerInput<R> {
         let next_char = self.input.next_char()?;
 
         let next_char = match next_char {
-            Char::Eof => return Ok(None),
-            Char::NoData => unreachable!("NoData should only be returned if the Reader is configured to emit it, which we don't do"),
+            Char::Eof | Char::NoData => return Ok(None),
             Char::Char(value) => value,
         };
 
