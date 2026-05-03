@@ -39,9 +39,7 @@ impl LexerDefinition {
     ) {
         let transitions = &mut self.transition[origin_state.get()];
 
-        for (transition_class, transition_state) in transitions
-            .iter_mut()
-        {
+        for (transition_class, transition_state) in transitions.iter_mut() {
             if *transition_class == class {
                 *transition_state = new_state;
                 return;
