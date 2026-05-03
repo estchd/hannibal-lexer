@@ -87,8 +87,11 @@ impl<R: Read> Lexer<R> {
                     .get_current_lexeme_length()
                     == 0
                 {
+                    self.state = LexerState::start_state();
                     return Ok(None);
                 }
+
+                self.state = LexerState::start_state();
 
                 return Err(Invalid(self.input.get_buffer()));
             },
@@ -103,6 +106,8 @@ impl<R: Read> Lexer<R> {
             token_type,
             token_value,
         };
+
+        self.state = LexerState::start_state();
 
         Ok(Some(token))
     }
