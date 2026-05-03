@@ -48,7 +48,7 @@ impl<R: Read> Lexer<R> {
     /// - There is no more input before the DFA encounters a valid final state, meaning the read input does not contain any valid lexemes.
     /// - The Lexer reads a character that does not have a valid transition from the current state and no valid final state has been encountered yet, meaning the read input does not contain any valid lexemes.
     #[inline]
-    pub fn next_lexeme(&mut self) -> Result<LexerToken, LexerError> {
+    pub fn next_lexeme(&mut self) -> Result<Option<LexerToken>, LexerError> {
         let mut last_final_state: Option<(TokenType, usize)> = None;
 
         loop {
@@ -82,6 +82,10 @@ impl<R: Read> Lexer<R> {
 
         let (token_type, lexeme_length) = match last_final_state {
             None => {
+                if self.input.get_current_lexeme_length() == 0 {
+                    return Ok(None);
+                }
+
                 return Err(Invalid(self.input.get_buffer()));
             },
             Some((token_type, lexeme_length)) => (token_type, lexeme_length),
