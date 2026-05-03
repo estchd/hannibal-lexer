@@ -213,7 +213,7 @@ impl LexerBuilder {
         let next_type_index = NonZeroUsize::new(1).expect("NonZeroUsize::new(1) should never panic since the value is a constant and non-zero");
 
         Self {
-            meta: LexerMeta::new(),
+            meta,
             classifications: HashMap::new(),
             transitions: HashMap::new(),
             token_types: HashMap::new(),
